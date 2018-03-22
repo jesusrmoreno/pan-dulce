@@ -170,21 +170,36 @@ const RequireLogin = inject("ui")(
                 flexDirection: "column",
                 padding: "0px 32px"
               }}
+              onKeyDown={e =>
+                e.key === "Enter" && ui.canSubmitLogin ? ui.doLogin() : null
+              }
+              tabIndex="0"
             >
               <Text size="f12" weight="bold">
                 Sign In
               </Text>
+              {ui.errorMessage && (
+                <Text
+                  size="f4"
+                  weight="bold"
+                  style={{ paddingTop: 16, color: "#ed494c" }}
+                >
+                  {ui.errorMessage}
+                </Text>
+              )}
               <Spacer height={16} />
               <div style={{ width: "100%" }}>
                 <Input
                   placeholder="Username"
                   icon="account_circle"
+                  disabled={ui.isLoggingIn}
                   autoFocus
                   onChange={e => (ui.username = e.target.value)}
                   value={ui.username}
                 />
                 <Spacer height={4} />
                 <Input
+                  disabled={ui.isLoggingIn}
                   placeholder="Password"
                   type="password"
                   icon="lock_outline"
@@ -198,7 +213,7 @@ const RequireLogin = inject("ui")(
                 disabled={!ui.canSubmitLogin}
                 onClick={ui.doLogin}
               >
-                Login
+                {ui.isLoggingIn ? "Logging In..." : "Login"}
               </PrimaryButton>
             </div>
           )
@@ -219,6 +234,7 @@ class App extends React.Component {
   }
 
   render() {
+    console.log(stores.ui.isLoggedIn);
     return (
       <Provider {...stores}>
         <ThemeWrapper>

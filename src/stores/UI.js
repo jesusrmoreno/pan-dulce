@@ -28,12 +28,17 @@ class UI {
     title = "Pan Dulce";
     needsLogin = false;
     isLoggedIn = false;
-
+    isLoggingIn = false;
     username = "";
     password = "";
+    errorMessage = null;
 
     get canSubmitLogin() {
-        return !!this.username.length && !!this.password.length;
+        return (
+            !!this.username.length &&
+            !!this.password.length &&
+            !this.isLoggingIn
+        );
     }
 
     constructor() {
@@ -41,11 +46,24 @@ class UI {
         window.ipcRenderer.on("login-success", () => {
             this.isLoggedIn = true;
             this.needsLogin = false;
+            this.isLoggingIn = false;
+            this.username = "";
+            this.password = "";
+            this.errorMessage = null;
         });
 
-        window.ipcRenderer.on("saved-login-fail", () => {
+        window.ipcRenderer.on("require-login", () => {
             this.needsLogin = true;
             this.isLoggedIn = false;
+        });
+
+        window.ipcRenderer.on("login-failure", (e, error) => {
+            console.log(error);
+            this.needsLogin = true;
+            this.isLoggedIn = false;
+            this.password = "";
+            this.isLoggingIn = false;
+            this.errorMessage = error.message;
         });
     }
 
@@ -54,13 +72,11 @@ class UI {
     }
 
     doLogin = () => {
-        // do the login
-        this.username = "";
-        this.password = "";
-    };
-
-    login = () => {
-        window.ipcRenderer.send("saved-login");
+        window.ipcRenderer.send("try-login", {
+            username: this.username,
+            password: this.password
+        });
+        this.isLoggingIn = true;
     };
 
     setTitle = title => {
@@ -83,7 +99,9 @@ const DecoratedUI = decorate(UI, {
     setTime: action,
     username: observable,
     password: observable,
-    canSubmitLogin: computed
+    isLoggingIn: observable,
+    canSubmitLogin: computed,
+    errorMessage: observable
 });
 
 export default DecoratedUI;

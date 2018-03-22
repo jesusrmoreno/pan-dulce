@@ -12,7 +12,7 @@ const path = require("path");
 const Client = require("instagram-private-api").V1;
 const device = new Client.Device("user_device");
 const storage = new Client.CookieFileStorage(
-    path.join(__dirname, "../cookies/usercookie.json")
+    path.join(__dirname, "../cookies/usercookie_4.json")
 );
 
 const Promise = require("bluebird");
@@ -57,8 +57,6 @@ function createWindow() {
 
     mainWindow.once("ready-to-show", async () => {
         mainWindow.show();
-        await tryLogin();
-        feed = new Client.Feed.Timeline(session);
     });
 
     mainWindowState.manage(mainWindow);
@@ -68,6 +66,8 @@ function createWindow() {
 
     ipcMain.on("init", async () => {
         await tryLogin();
+
+        // feed = new Client.Feed.Timeline(session);
     });
 
     ipcMain.on("get-feed", (e, updated) => {
@@ -84,6 +84,10 @@ function createWindow() {
             { concurrency: 3 }
         );
         await downloads;
+    });
+
+    ipcMain.on("try-login", (e, { username, password }) => {
+        login(username, password);
     });
     // Open the DevTools.
     // mainWindow.webContents.openDevTools();
@@ -145,14 +149,6 @@ function updateFeed(posts, isAppend) {
     store.dispatch(addFeed({ isAppend, posts }));
 }
 
-async function savedLogin() {
-    try {
-        session = await Client.Session.create(device, storage);
-    } catch (e) {
-        console.error("could not log in using cookie");
-    }
-}
-
 async function login(username, password) {
     try {
         session = await Client.Session.create(
@@ -161,18 +157,22 @@ async function login(username, password) {
             username,
             password
         );
+        mainWindow.webContents.send("login-success");
+        feed = new Client.Feed.Timeline(session);
+        getPosts();
     } catch (e) {
+        mainWindow.webContents.send("login-failure", e);
         console.error("could not log in using cookie");
     }
 }
 
 async function tryLogin() {
     try {
-        await savedLogin();
+        session = await Client.Session.create(device, storage);
+        getPosts();
         mainWindow.webContents.send("login-success");
     } catch (e) {
-        console.error(e);
-        return mainWindow.webContents.send("login-fail", "Please Sign In");
+        return mainWindow.webContents.send("require-login", "Please Sign In");
     }
 }
 
