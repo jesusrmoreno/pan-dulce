@@ -1,0 +1,112 @@
+* {
+  cursor: default;
+  padding: 0;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+::-webkit-scrollbar { display: none; }
+
+a {
+    text-decoration: none;
+}
+li {
+    list-style: none;
+}
+img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+div {
+  margin: 0 !important;
+}
+
+html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: ".SFNSDisplay-Regular", "Helvetica Neue", Helvetica, "Segoe UI", sans-serif;
+  font-size: 13px;
+  color: #333;
+  background-color: transparent;
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+}
+
+form,
+input,
+optgroup,
+select,
+textarea {
+  -webkit-user-select: text;
+  -webkit-app-region:  no-drag;
+}
+
+img {
+  margin: 0;
+}
+
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before {
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+input, button, textarea, :focus {
+  outline: none; // You should add some other style for :focus to help UX/a11y
+}
+
+button {
+  border: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.uppercase {
+    text-transform: uppercase;;
+}
+
+.draggable {
+    -webkit-app-region: drag;
+}
+
+.h1 { font-size: 36px; }
+.h2 { font-size: 30px; }
+.h3 { font-size: 24px; }
+.h4 { font-size: 18px; }
+.h5 { font-size: 14px; }
+.h6 { font-size: 12px; }
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.app {
+  /* Smoother startup */
+  animation: fadein 0.5s;
+}
